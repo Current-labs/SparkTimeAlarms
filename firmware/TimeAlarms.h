@@ -56,7 +56,7 @@ extern time_t time_zone_cache;  // from spark_wiring_time.cpp
 
 //-------------------------------------
 
-#define dtNBR_ALARMS 6   // max is 255
+#define dtNBR_ALARMS 128 //6   // max is 255
 
 #define USE_SPECIALIST_METHODS  // define this for testing
 
