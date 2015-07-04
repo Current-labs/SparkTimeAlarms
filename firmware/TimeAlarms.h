@@ -86,7 +86,7 @@ typedef AlarmID_t AlarmId;  // Arduino friendly name
 #define dtINVALID_TIME     0L
 
 class AlarmClass;  // forward reference
-typedef void (*OnTick_t)();  // alarm callback function typedef 
+typedef void (*OnTick_t)(void *);  // alarm callback function typedef 
 
 // class defining an alarm instance, only used by dtAlarmsClass
 class AlarmClass
@@ -96,6 +96,7 @@ private:
 public:
   AlarmClass(); 
   OnTick_t onTickHandler; 
+  void *onTickArgs;
   void updateNextTrigger();
   time_t value;
   time_t nextTrigger;
@@ -110,27 +111,27 @@ private:
    void serviceAlarms();
    uint8_t isServicing;
    uint8_t servicedAlarmId; // the alarm currently being serviced
-   AlarmID_t create( time_t value, OnTick_t onTickHandler, uint8_t isOneShot, dtAlarmPeriod_t alarmType, uint8_t isEnabled=true);
+   AlarmID_t create( time_t value, OnTick_t onTickHandler, void *onTickArgs, uint8_t isOneShot, dtAlarmPeriod_t alarmType, uint8_t isEnabled=true);
    
 public:
   TimeAlarmsClass();
   // functions to create alarms and timers
 
-  AlarmID_t triggerOnce(time_t value, OnTick_t onTickHandler);   // trigger once at the given time_t
+  AlarmID_t triggerOnce(time_t value, OnTick_t onTickHandler, void *onTickArgs = NULL);   // trigger once at the given time_t
 
-  AlarmID_t alarmRepeat(time_t value, OnTick_t onTickHandler);                    // trigger daily at given time of day
-  AlarmID_t alarmRepeat(const int H,  const int M,  const int S, OnTick_t onTickHandler); // as above, with hms arguments
-  AlarmID_t alarmRepeat(const timeDayOfWeek_t DOW, const int H,  const int M,  const int S, OnTick_t onTickHandler); // as above, with day of week 
+  AlarmID_t alarmRepeat(time_t value, OnTick_t onTickHandler, void *onTickArgs = NULL);                    // trigger daily at given time of day
+  AlarmID_t alarmRepeat(const int H,  const int M,  const int S, OnTick_t onTickHandler, void *onTickArgs = NULL); // as above, with hms arguments
+  AlarmID_t alarmRepeat(const timeDayOfWeek_t DOW, const int H,  const int M,  const int S, OnTick_t onTickHandler, void *onTickArgs = NULL); // as above, with day of week 
  
-  AlarmID_t alarmOnce(time_t value, OnTick_t onTickHandler);                     // trigger once at given time of day
-  AlarmID_t alarmOnce( const int H,  const int M,  const int S, OnTick_t onTickHandler);  // as above, with hms arguments
-  AlarmID_t alarmOnce(const timeDayOfWeek_t DOW, const int H,  const int M,  const int S, OnTick_t onTickHandler); // as above, with day of week 
+  AlarmID_t alarmOnce(time_t value, OnTick_t onTickHandler, void *onTickArgs = NULL);                     // trigger once at given time of day
+  AlarmID_t alarmOnce( const int H,  const int M,  const int S, OnTick_t onTickHandler, void *onTickArgs = NULL);  // as above, with hms arguments
+  AlarmID_t alarmOnce(const timeDayOfWeek_t DOW, const int H,  const int M,  const int S, OnTick_t onTickHandler, void *onTickArgs = NULL); // as above, with day of week 
   
-  AlarmID_t timerOnce(time_t value, OnTick_t onTickHandler);   // trigger once after the given number of seconds 
-  AlarmID_t timerOnce(const int H,  const int M,  const int S, OnTick_t onTickHandler);   // As above with HMS arguments
+  AlarmID_t timerOnce(time_t value, OnTick_t onTickHandler, void *onTickArgs = NULL);   // trigger once after the given number of seconds 
+  AlarmID_t timerOnce(const int H,  const int M,  const int S, OnTick_t onTickHandler, void *onTickArgs = NULL);   // As above with HMS arguments
   
-  AlarmID_t timerRepeat(time_t value, OnTick_t onTickHandler); // trigger after the given number of seconds continuously
-  AlarmID_t timerRepeat(const int H,  const int M,  const int S, OnTick_t onTickHandler);   // As above with HMS arguments
+  AlarmID_t timerRepeat(time_t value, OnTick_t onTickHandler, void *onTickArgs = NULL); // trigger after the given number of seconds continuously
+  AlarmID_t timerRepeat(const int H,  const int M,  const int S, OnTick_t onTickHandler, void *onTickArgs = NULL);   // As above with HMS arguments
   
   void delay(unsigned long ms);
    

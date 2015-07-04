@@ -108,59 +108,59 @@ TimeAlarmsClass::TimeAlarmsClass()
 
 // this method creates a trigger at the given absolute time_t
 // it replaces the call to alarmOnce with values greater than a week   
-AlarmID_t TimeAlarmsClass::triggerOnce(time_t value, OnTick_t onTickHandler){   // trigger once at the given time_t
+AlarmID_t TimeAlarmsClass::triggerOnce(time_t value, OnTick_t onTickHandler, void *onTickArgs){   // trigger once at the given time_t
      if( value > 0)
-        return create( value, onTickHandler, IS_ONESHOT, dtExplicitAlarm );
+        return create( value, onTickHandler, onTickArgs, IS_ONESHOT, dtExplicitAlarm );
      else
         return dtINVALID_ALARM_ID; // dont't allocate if the time is greater than one day 	  
 }
 
 // this method will now return an error if the value is greater than one day - use DOW methods for weekly alarms   
-AlarmID_t TimeAlarmsClass::alarmOnce(time_t value, OnTick_t onTickHandler){   // trigger once at the given time of day
+AlarmID_t TimeAlarmsClass::alarmOnce(time_t value, OnTick_t onTickHandler, void *onTickArgs){   // trigger once at the given time of day
      if( value <= SECS_PER_DAY)
-        return create( value, onTickHandler, IS_ONESHOT, dtDailyAlarm );
+        return create( value, onTickHandler, onTickArgs, IS_ONESHOT, dtDailyAlarm );
      else
         return dtINVALID_ALARM_ID; // dont't allocate if the time is greater than one day 	  
 }
 
-AlarmID_t TimeAlarmsClass::alarmOnce(const int H,  const int M,  const int S,OnTick_t onTickHandler){   // as above with HMS arguments
-   return create( AlarmHMS(H,M,S), onTickHandler, IS_ONESHOT, dtDailyAlarm );
+AlarmID_t TimeAlarmsClass::alarmOnce(const int H,  const int M,  const int S,OnTick_t onTickHandler, void *onTickArgs){   // as above with HMS arguments
+   return create( AlarmHMS(H,M,S), onTickHandler, onTickArgs, IS_ONESHOT, dtDailyAlarm );
 }
 
-AlarmID_t TimeAlarmsClass::alarmOnce(const timeDayOfWeek_t DOW, const int H,  const int M,  const int S, OnTick_t onTickHandler){  // as above, with day of week 
-   return create( (DOW-1) * SECS_PER_DAY + AlarmHMS(H,M,S), onTickHandler, IS_ONESHOT, dtWeeklyAlarm );   
+AlarmID_t TimeAlarmsClass::alarmOnce(const timeDayOfWeek_t DOW, const int H,  const int M,  const int S, OnTick_t onTickHandler, void *onTickArgs){  // as above, with day of week 
+   return create( (DOW-1) * SECS_PER_DAY + AlarmHMS(H,M,S), onTickHandler, onTickArgs, IS_ONESHOT, dtWeeklyAlarm );   
 }
    
 // this method will now return an error if the value is greater than one day - use DOW methods for weekly alarms   
-AlarmID_t TimeAlarmsClass::alarmRepeat(time_t value, OnTick_t onTickHandler){ // trigger daily at the given time
+AlarmID_t TimeAlarmsClass::alarmRepeat(time_t value, OnTick_t onTickHandler, void *onTickArgs){ // trigger daily at the given time
     if( value <= SECS_PER_DAY)
-       return create( value, onTickHandler, IS_REPEAT, dtDailyAlarm );
+       return create( value, onTickHandler, onTickArgs, IS_REPEAT, dtDailyAlarm );
     else
        return dtINVALID_ALARM_ID; // dont't allocate if the time is greater than one day 	  
     }
     
-    AlarmID_t TimeAlarmsClass::alarmRepeat(const int H,  const int M,  const int S, OnTick_t onTickHandler){ // as above with HMS arguments
-         return create( AlarmHMS(H,M,S), onTickHandler, IS_REPEAT, dtDailyAlarm );
+    AlarmID_t TimeAlarmsClass::alarmRepeat(const int H,  const int M,  const int S, OnTick_t onTickHandler, void *onTickArgs){ // as above with HMS arguments
+         return create( AlarmHMS(H,M,S), onTickHandler, onTickArgs, IS_REPEAT, dtDailyAlarm );
     }
     
-    AlarmID_t TimeAlarmsClass::alarmRepeat(const timeDayOfWeek_t DOW, const int H,  const int M,  const int S, OnTick_t onTickHandler){  // as above, with day of week 
-       return create( (DOW-1) * SECS_PER_DAY + AlarmHMS(H,M,S), onTickHandler, IS_REPEAT, dtWeeklyAlarm );      
+    AlarmID_t TimeAlarmsClass::alarmRepeat(const timeDayOfWeek_t DOW, const int H,  const int M,  const int S, OnTick_t onTickHandler, void *onTickArgs){  // as above, with day of week 
+       return create( (DOW-1) * SECS_PER_DAY + AlarmHMS(H,M,S), onTickHandler, onTickArgs, IS_REPEAT, dtWeeklyAlarm );      
     }
       
-    AlarmID_t TimeAlarmsClass::timerOnce(time_t value, OnTick_t onTickHandler){   // trigger once after the given number of seconds 
-         return create( value, onTickHandler, IS_ONESHOT, dtTimer );
+    AlarmID_t TimeAlarmsClass::timerOnce(time_t value, OnTick_t onTickHandler, void *onTickArgs){   // trigger once after the given number of seconds 
+         return create( value, onTickHandler, onTickArgs, IS_ONESHOT, dtTimer );
     }
     
-    AlarmID_t TimeAlarmsClass::timerOnce(const int H,  const int M,  const int S, OnTick_t onTickHandler){   // As above with HMS arguments
-      return create( AlarmHMS(H,M,S), onTickHandler, IS_ONESHOT, dtTimer );
+    AlarmID_t TimeAlarmsClass::timerOnce(const int H,  const int M,  const int S, OnTick_t onTickHandler, void *onTickArgs){   // As above with HMS arguments
+      return create( AlarmHMS(H,M,S), onTickHandler, onTickArgs, IS_ONESHOT, dtTimer );
     }
       
-    AlarmID_t TimeAlarmsClass::timerRepeat(time_t value, OnTick_t onTickHandler){ // trigger after the given number of seconds continuously
-         return create( value, onTickHandler, IS_REPEAT, dtTimer);
+    AlarmID_t TimeAlarmsClass::timerRepeat(time_t value, OnTick_t onTickHandler, void *onTickArgs){ // trigger after the given number of seconds continuously
+         return create( value, onTickHandler, onTickArgs, IS_REPEAT, dtTimer);
     }
     
-    AlarmID_t TimeAlarmsClass::timerRepeat(const int H,  const int M,  const int S, OnTick_t onTickHandler){ // trigger after the given number of seconds continuously
-         return create( AlarmHMS(H,M,S), onTickHandler, IS_REPEAT, dtTimer);
+    AlarmID_t TimeAlarmsClass::timerRepeat(const int H,  const int M,  const int S, OnTick_t onTickHandler, void *onTickArgs){ // trigger after the given number of seconds continuously
+         return create( AlarmHMS(H,M,S), onTickHandler, onTickArgs, IS_REPEAT, dtTimer);
     }
     
     void TimeAlarmsClass::enable(AlarmID_t ID)
@@ -297,12 +297,13 @@ AlarmID_t TimeAlarmsClass::alarmRepeat(time_t value, OnTick_t onTickHandler){ //
           if( Alarm[servicedAlarmId].Mode.isEnabled && (now() >= Alarm[servicedAlarmId].nextTrigger)  )
           {
             OnTick_t TickHandler = Alarm[servicedAlarmId].onTickHandler;
+            void *TickArgs = Alarm[servicedAlarmId].onTickArgs;
             if(Alarm[servicedAlarmId].Mode.isOneShot)
                free(servicedAlarmId);  // free the ID if mode is OnShot		
             else   
                Alarm[servicedAlarmId].updateNextTrigger();
             if( TickHandler != NULL) {        
-              (*TickHandler)();     // call the handler  
+              (*TickHandler)(TickArgs);     // call the handler  
             }
           }
         }
@@ -327,7 +328,7 @@ AlarmID_t TimeAlarmsClass::alarmRepeat(time_t value, OnTick_t onTickHandler){ //
      }
     
     // attempt to create an alarm and return true if successful
-    AlarmID_t TimeAlarmsClass::create( time_t value, OnTick_t onTickHandler, uint8_t isOneShot, dtAlarmPeriod_t alarmType, uint8_t isEnabled) 
+    AlarmID_t TimeAlarmsClass::create( time_t value, OnTick_t onTickHandler, void *onTickArgs, uint8_t isOneShot, dtAlarmPeriod_t alarmType, uint8_t isEnabled) 
     {
       if( ! (dtIsAlarm(alarmType) && now() < SECS_PER_YEAR)) // only create alarm ids if the time is at least Jan 1 1971
       {  
@@ -337,6 +338,7 @@ AlarmID_t TimeAlarmsClass::alarmRepeat(time_t value, OnTick_t onTickHandler){ //
     	  {
     	  // here if there is an Alarm id that is not allocated
       	    Alarm[id].onTickHandler = onTickHandler;
+            Alarm[id].onTickArgs = onTickArgs;
     	    Alarm[id].Mode.isOneShot = isOneShot;
     	    Alarm[id].Mode.alarmType = alarmType;
     	    Alarm[id].value = value;
