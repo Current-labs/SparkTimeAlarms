@@ -56,7 +56,7 @@ extern time_t time_zone_cache;  // from spark_wiring_time.cpp
 
 //-------------------------------------
 
-#define dtNBR_ALARMS 128 //6   // max is 255
+#define dtNBR_ALARMS 16 // 128 //6   // max is 255
 
 #define USE_SPECIALIST_METHODS  // define this for testing
 
@@ -156,6 +156,14 @@ private:  // the following methods are for testing and are not documented as par
   time_t getNextTrigger();                  // returns the time of the next scheduled alarm
   bool isAllocated(AlarmID_t ID);           // returns true if this id is allocated  
   bool isAlarm(AlarmID_t ID);               // returns true if id is for a time based alarm, false if its a timer or not allocated
+
+
+  void captureNextTriggerData();
+  uint8_t ntId;
+  uint8_t ntTimeDiffH;
+  uint8_t ntTimeDiffM;
+  uint8_t ntTimeDiffS;
+  void *ntOnTickArgs;
 };
 
 extern TimeAlarmsClass Alarm;  // make an instance for the user

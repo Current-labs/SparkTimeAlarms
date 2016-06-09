@@ -312,20 +312,83 @@ AlarmID_t TimeAlarmsClass::alarmRepeat(time_t value, OnTick_t onTickHandler, voi
     }
     
     // returns the absolute time of the next scheduled alarm, or 0 if none
-     time_t TimeAlarmsClass::getNextTrigger()
-     {
-     time_t nextTrigger = 0xffffffff;  // the max time value
-     
-        for(uint8_t id = 0; id < dtNBR_ALARMS; id++)
+    time_t TimeAlarmsClass::getNextTrigger()
+    {
+      time_t nextTrigger = 0xffffffff;  // the max time value
+
+      for(uint8_t id = 0; id < dtNBR_ALARMS; id++)
+      {
+        if(isAllocated(id) )
         {
-          if(isAllocated(id) )
-          {
-        	if(Alarm[id].nextTrigger <  nextTrigger)
-    		   nextTrigger = Alarm[id].nextTrigger;	
-          }      
+      	  // if(Alarm[id].nextTrigger <  nextTrigger) {
+          if(uint32_t(Alarm[id].nextTrigger) <  uint32_t(nextTrigger)) {
+  		      nextTrigger = Alarm[id].nextTrigger;
+          }
+        }      
     	}
-        return nextTrigger == 0xffffffff ? 0 : nextTrigger;  	
-     }
+
+      return (uint32_t(nextTrigger) == 0xffffffff) ? 0 : nextTrigger;
+    }
+
+    void TimeAlarmsClass::captureNextTriggerData()
+    {
+      time_t nextTrigger = 0xffffffff;  // the max time value
+      uint8_t nextTriggerId = 0;
+
+      for(uint8_t id = 0; id < dtNBR_ALARMS; id++)
+      {
+        if(isAllocated(id) )
+        {
+          // if(Alarm[id].nextTrigger <  nextTrigger) {
+          if(uint32_t(Alarm[id].nextTrigger) <  uint32_t(nextTrigger)) {
+            nextTrigger = Alarm[id].nextTrigger;
+            nextTriggerId = id;
+          }
+        }      
+      }
+
+      time_t timeNextTrigger = nextTrigger; //getNextTrigger();
+      time_t timeNow = now();
+      time_t timeDiff = timeNextTrigger - timeNow;
+
+      this->ntId = nextTriggerId;
+      this->ntTimeDiffH = numberOfHours  (timeDiff);
+      this->ntTimeDiffM = numberOfMinutes(timeDiff);
+      this->ntTimeDiffS = numberOfSeconds(timeDiff);
+      this->ntOnTickArgs = Alarm[nextTriggerId].onTickArgs;
+    }
+
+    // uint32_t TimeAlarmsClass::getNextTiggerDiff24hrs()
+    // {
+    //   time_t timeNextTrigger = getNextTrigger();
+    //   time_t timeNow = now();
+    //   time_t timeDiff = timeNextTrigger - timeNow;
+
+    //   // Serial.println("timeNextTrigger : " + String(numberOfSeconds(timeNextTrigger)));
+    //   // Serial.println("timeNextTrigger : " + String(numberOfMinutes(timeNextTrigger)));
+    //   // Serial.println("timeNextTrigger : " + String(numberOfHours  (timeNextTrigger)));
+
+    //   // Serial.println("timeNow : " + String(numberOfSeconds(timeNow)));
+    //   // Serial.println("timeNow : " + String(numberOfMinutes(timeNow)));
+    //   // Serial.println("timeNow : " + String(numberOfHours  (timeNow)));
+
+    //   // Serial.println("timeDiff : " + String(numberOfSeconds(timeDiff)));
+    //   // Serial.println("timeDiff : " + String(numberOfMinutes(timeDiff)));
+    //   // Serial.println("timeDiff : " + String(numberOfHours  (timeDiff)));
+
+    //   uint8_t diffH = numberOfHours  (timeDiff);
+    //   uint8_t diffM = numberOfMinutes(timeDiff);
+    //   uint8_t diffS = numberOfSeconds(timeDiff);
+
+    //   // Serial.println("diffH : " + String(diffH));
+    //   // Serial.println("diffM : " + String(diffM));
+    //   // Serial.println("diffS : " + String(diffS));
+
+    //   uint32_t response = (0x00<<24) | (diffH<<16) | (diffM<<8) | (diffS);
+    //   // Serial.println("response : 0x" + String::format("%08X",response));
+
+    //   return response;
+    // }
     
     // attempt to create an alarm and return true if successful
     AlarmID_t TimeAlarmsClass::create( time_t value, OnTick_t onTickHandler, void *onTickArgs, uint8_t isOneShot, dtAlarmPeriod_t alarmType, uint8_t isEnabled) 
