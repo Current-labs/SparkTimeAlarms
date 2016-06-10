@@ -157,13 +157,14 @@ private:  // the following methods are for testing and are not documented as par
   bool isAllocated(AlarmID_t ID);           // returns true if this id is allocated  
   bool isAlarm(AlarmID_t ID);               // returns true if id is for a time based alarm, false if its a timer or not allocated
 
-
-  void captureNextTriggerData();
-  uint8_t ntId;
-  uint8_t ntTimeDiffH;
-  uint8_t ntTimeDiffM;
-  uint8_t ntTimeDiffS;
-  void *ntOnTickArgs;
+  void captureLastNextTriggerData();
+  uint8_t  ltId;
+  uint8_t  ntId;
+  void     *ltOnTickArgs;
+  void     *ntOnTickArgs;
+  uint32_t ltTimeSeconds;
+  uint32_t ntTimeSeconds;
+  uint32_t nowTimeSeconds;
 };
 
 extern TimeAlarmsClass Alarm;  // make an instance for the user

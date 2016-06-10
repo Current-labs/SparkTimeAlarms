@@ -330,11 +330,39 @@ AlarmID_t TimeAlarmsClass::alarmRepeat(time_t value, OnTick_t onTickHandler, voi
       return (uint32_t(nextTrigger) == 0xffffffff) ? 0 : nextTrigger;
     }
 
-    void TimeAlarmsClass::captureNextTriggerData()
+    void TimeAlarmsClass::captureLastNextTriggerData()
     {
+      time_t timeNow = now();
+      // Serial.println("timeNow      : " + String(numberOfHours  (timeNow)));
+      // Serial.println("timeNow      : " + String(numberOfMinutes(timeNow)));
+      // Serial.println("timeNow      : " + String(numberOfSeconds(timeNow)));
+      // Serial.println("timeNow      : " + String(dayOfWeek      (timeNow)));
+
+      time_t  lastTrigger = 0x00000000;
+      uint8_t lastTriggerId = 0;
+      for(uint8_t id = 0; id < dtNBR_ALARMS; id++)
+      {
+        if(isAllocated(id) )
+        {
+          time_t testValue = Alarm[id].nextTrigger;
+          // Serial.println("-- testValue  : " + String(numberOfHours  (testValue)));
+          // Serial.println("-- testValue  : " + String(numberOfMinutes(testValue)));
+          // Serial.println("-- testValue  : " + String(numberOfSeconds(testValue)));
+          // Serial.println("-- testValue  : " + String(dayOfWeek      (testValue)));
+          if(uint32_t(Alarm[id].nextTrigger) > uint32_t(lastTrigger)) {
+            lastTrigger = Alarm[id].nextTrigger;
+            lastTriggerId = id;
+          }
+        }
+      }
+      // Serial.println("lastTriggerId: " + String(lastTriggerId));
+      // Serial.println("lastTrigger  : " + String(numberOfHours  (lastTrigger)));
+      // Serial.println("lastTrigger  : " + String(numberOfMinutes(lastTrigger)));
+      // Serial.println("lastTrigger  : " + String(numberOfSeconds(lastTrigger)));
+      // Serial.println("lastTrigger  : " + String(dayOfWeek      (lastTrigger)));
+
       time_t nextTrigger = 0xffffffff;  // the max time value
       uint8_t nextTriggerId = 0;
-
       for(uint8_t id = 0; id < dtNBR_ALARMS; id++)
       {
         if(isAllocated(id) )
@@ -346,49 +374,26 @@ AlarmID_t TimeAlarmsClass::alarmRepeat(time_t value, OnTick_t onTickHandler, voi
           }
         }      
       }
+      // Serial.println("nextTriggerId: " + String(nextTriggerId));
+      // Serial.println("nextTrigger  : " + String(numberOfHours  (nextTrigger)));
+      // Serial.println("nextTrigger  : " + String(numberOfMinutes(nextTrigger)));
+      // Serial.println("nextTrigger  : " + String(numberOfSeconds(nextTrigger)));
+      // Serial.println("nextTrigger  : " + String(dayOfWeek      (nextTrigger)));
 
-      time_t timeNextTrigger = nextTrigger; //getNextTrigger();
-      time_t timeNow = now();
-      time_t timeDiff = timeNextTrigger - timeNow;
+      uint32_t lastTriggerSeconds = uint8_t(numberOfHours(lastTrigger))*3600 + uint8_t(numberOfMinutes(lastTrigger))*60 + uint8_t(numberOfSeconds(lastTrigger));
+      uint32_t nextTriggerSeconds = uint8_t(numberOfHours(nextTrigger))*3600 + uint8_t(numberOfMinutes(nextTrigger))*60 + uint8_t(numberOfSeconds(nextTrigger));
+      uint32_t timeNowSeconds     = uint8_t(numberOfHours(timeNow    ))*3600 + uint8_t(numberOfMinutes(timeNow    ))*60 + uint8_t(numberOfSeconds(timeNow    ));
 
+      this->ltId = lastTriggerId;
       this->ntId = nextTriggerId;
-      this->ntTimeDiffH = numberOfHours  (timeDiff);
-      this->ntTimeDiffM = numberOfMinutes(timeDiff);
-      this->ntTimeDiffS = numberOfSeconds(timeDiff);
+      this->ltOnTickArgs = Alarm[lastTriggerId].onTickArgs;
       this->ntOnTickArgs = Alarm[nextTriggerId].onTickArgs;
+      this->ltTimeSeconds = lastTriggerSeconds;
+      this->ntTimeSeconds = nextTriggerSeconds;
+      this->nowTimeSeconds = timeNowSeconds;
+
+      // Serial.println("");
     }
-
-    // uint32_t TimeAlarmsClass::getNextTiggerDiff24hrs()
-    // {
-    //   time_t timeNextTrigger = getNextTrigger();
-    //   time_t timeNow = now();
-    //   time_t timeDiff = timeNextTrigger - timeNow;
-
-    //   // Serial.println("timeNextTrigger : " + String(numberOfSeconds(timeNextTrigger)));
-    //   // Serial.println("timeNextTrigger : " + String(numberOfMinutes(timeNextTrigger)));
-    //   // Serial.println("timeNextTrigger : " + String(numberOfHours  (timeNextTrigger)));
-
-    //   // Serial.println("timeNow : " + String(numberOfSeconds(timeNow)));
-    //   // Serial.println("timeNow : " + String(numberOfMinutes(timeNow)));
-    //   // Serial.println("timeNow : " + String(numberOfHours  (timeNow)));
-
-    //   // Serial.println("timeDiff : " + String(numberOfSeconds(timeDiff)));
-    //   // Serial.println("timeDiff : " + String(numberOfMinutes(timeDiff)));
-    //   // Serial.println("timeDiff : " + String(numberOfHours  (timeDiff)));
-
-    //   uint8_t diffH = numberOfHours  (timeDiff);
-    //   uint8_t diffM = numberOfMinutes(timeDiff);
-    //   uint8_t diffS = numberOfSeconds(timeDiff);
-
-    //   // Serial.println("diffH : " + String(diffH));
-    //   // Serial.println("diffM : " + String(diffM));
-    //   // Serial.println("diffS : " + String(diffS));
-
-    //   uint32_t response = (0x00<<24) | (diffH<<16) | (diffM<<8) | (diffS);
-    //   // Serial.println("response : 0x" + String::format("%08X",response));
-
-    //   return response;
-    // }
     
     // attempt to create an alarm and return true if successful
     AlarmID_t TimeAlarmsClass::create( time_t value, OnTick_t onTickHandler, void *onTickArgs, uint8_t isOneShot, dtAlarmPeriod_t alarmType, uint8_t isEnabled) 
