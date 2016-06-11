@@ -394,6 +394,13 @@ AlarmID_t TimeAlarmsClass::alarmRepeat(time_t value, OnTick_t onTickHandler, voi
 
       // Serial.println("");
     }
+
+    void *TimeAlarmsClass::getOnTickArgs(AlarmID_t ID)
+    {
+      // if(isAllocated(ID)) {
+      return Alarm[ID].onTickArgs;
+      // }
+    }
     
     // attempt to create an alarm and return true if successful
     AlarmID_t TimeAlarmsClass::create( time_t value, OnTick_t onTickHandler, void *onTickArgs, uint8_t isOneShot, dtAlarmPeriod_t alarmType, uint8_t isEnabled) 

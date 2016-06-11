@@ -165,6 +165,8 @@ private:  // the following methods are for testing and are not documented as par
   uint32_t ltTimeSeconds;
   uint32_t ntTimeSeconds;
   uint32_t nowTimeSeconds;
+
+  void *getOnTickArgs(AlarmID_t ID);
 };
 
 extern TimeAlarmsClass Alarm;  // make an instance for the user
