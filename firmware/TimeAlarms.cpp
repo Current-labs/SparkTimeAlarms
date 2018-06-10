@@ -50,7 +50,7 @@ void AlarmClass::updateNextTrigger()
 {  
   if( (value != 0) && Mode.isEnabled )
   {
-    time_t time = now();
+    time_t time = Time.local();
     if( dtIsAlarm(Mode.alarmType) && nextTrigger <= time )   // update alarm if next trigger is not yet in the future
     {      
       if(Mode.alarmType == dtExplicitAlarm ) // is the value a specific date and time in the future
@@ -59,7 +59,7 @@ void AlarmClass::updateNextTrigger()
       }
       else if(Mode.alarmType == dtDailyAlarm)  //if this is a daily alarm
       {
-        if( value + previousMidnight(now()) <= time)
+        if( value + previousMidnight(Time.local()) <= time)
         {
           nextTrigger = value + nextMidnight(time); // if time has passed then set for tomorrow
         }
@@ -70,7 +70,7 @@ void AlarmClass::updateNextTrigger()
       }
       else if(Mode.alarmType == dtWeeklyAlarm)  // if this is a weekly alarm
       {
-        if( (value + previousSunday(now())) <= time)
+        if( (value + previousSunday(Time.local())) <= time)
         {
           nextTrigger = value + nextSunday(time); // if day has passed then set for the next week.
         }
@@ -276,7 +276,7 @@ AlarmID_t TimeAlarmsClass::alarmRepeat(time_t value, OnTick_t onTickHandler, voi
     
     uint8_t TimeAlarmsClass::getDigitsNow( dtUnits_t Units)
     {
-      time_t time = now();
+      time_t time = Time.local();
       if(Units == dtSecond) return numberOfSeconds(time);
       if(Units == dtMinute) return numberOfMinutes(time); 
       if(Units == dtHour) return numberOfHours(time);
@@ -294,7 +294,7 @@ AlarmID_t TimeAlarmsClass::alarmRepeat(time_t value, OnTick_t onTickHandler, voi
         isServicing = true;
         for( servicedAlarmId = 0; servicedAlarmId < dtNBR_ALARMS; servicedAlarmId++)
         {
-          if( Alarm[servicedAlarmId].Mode.isEnabled && (now() >= Alarm[servicedAlarmId].nextTrigger)  )
+          if( Alarm[servicedAlarmId].Mode.isEnabled && (Time.local() >= Alarm[servicedAlarmId].nextTrigger)  )
           {
             OnTick_t TickHandler = Alarm[servicedAlarmId].onTickHandler;
             void *TickArgs = Alarm[servicedAlarmId].onTickArgs;
@@ -332,7 +332,7 @@ AlarmID_t TimeAlarmsClass::alarmRepeat(time_t value, OnTick_t onTickHandler, voi
 
     void TimeAlarmsClass::captureLastNextTriggerData()
     {
-      time_t timeNow = now();
+      time_t timeNow = Time.local();
       // Serial.println("timeNow      : " + String(numberOfHours  (timeNow)));
       // Serial.println("timeNow      : " + String(numberOfMinutes(timeNow)));
       // Serial.println("timeNow      : " + String(numberOfSeconds(timeNow)));
@@ -401,11 +401,11 @@ AlarmID_t TimeAlarmsClass::alarmRepeat(time_t value, OnTick_t onTickHandler, voi
       return Alarm[ID].onTickArgs;
       // }
     }
-    
+
     // attempt to create an alarm and return true if successful
     AlarmID_t TimeAlarmsClass::create( time_t value, OnTick_t onTickHandler, void *onTickArgs, uint8_t isOneShot, dtAlarmPeriod_t alarmType, uint8_t isEnabled) 
     {
-      if( ! (dtIsAlarm(alarmType) && now() < SECS_PER_YEAR)) // only create alarm ids if the time is at least Jan 1 1971
+      if( ! (dtIsAlarm(alarmType) && Time.local() < SECS_PER_YEAR)) // only create alarm ids if the time is at least Jan 1 1971
       {  
     	for(uint8_t id = 0; id < dtNBR_ALARMS; id++)
         {
@@ -428,4 +428,3 @@ AlarmID_t TimeAlarmsClass::alarmRepeat(time_t value, OnTick_t onTickHandler, voi
     // make one instance for the user to use
     TimeAlarmsClass Alarm = TimeAlarmsClass() ;
 
-#undef now()
